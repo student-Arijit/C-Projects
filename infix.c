@@ -22,6 +22,7 @@ void push(stack*, char);
 char pop(stack*);
 void display(stack*);
 void insertLinkedList(node**, char);
+void displayReverseHelper(node*);
 
 /*main*/
 
@@ -151,16 +152,18 @@ char pop(stack* s) {
     return c;
 }
 
+void displayReverseHelper(node* n) {
+    if (n == NULL) return;
+    displayReverseHelper(n->next);
+    printf("%c", n->data);        
+}
+
 void display(stack* s) {
-    if(isEmptyStack(s)) {
+    if (isEmptyStack(s)) {
         printf("empty");
         return;
     }
-    node* temp = s->top;
-    while(temp) {
-        printf("%c", temp ->data);
-        temp = temp->next;
-    }
+    displayReverseHelper(s->top);
 }
 
 void insertLinkedList(node** head, char c) {
