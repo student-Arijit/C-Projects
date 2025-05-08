@@ -23,6 +23,8 @@ char pop(stack*);
 void display(stack*);
 void insertLinkedList(node**, char);
 void displayReverseHelper(node*);
+int precedenceReturn(char);
+bool precedenceOperation(stack*, char*);
 
 /*main*/
 
@@ -46,7 +48,8 @@ int main(void) {
     node* temp = head;
     int count = 1;
 
-    //remaining work
+    printf("SI No.\tInput\tStack\tOutput\tOperation\n");
+
     while (temp->next != NULL) {
         char operation[20];
 
@@ -58,6 +61,12 @@ int main(void) {
             push(s, temp->data);
             strcpy(operation, "Push()");
         }
+
+        char popped;
+        if (precedenceOperation(s, &popped)) {
+            insertLinkedList(&ouputHead, popped);
+        }
+        
 
         //display stack
         display(s);
@@ -181,4 +190,37 @@ void insertLinkedList(node** head, char c) {
         temp = temp->next;
     }
     temp->next = newNode;
+}
+
+int precedenceReturn(char c) {
+    int presedence1 = 1;
+    int presedence2 = 2;
+    int presedence3 = 3;
+
+    if (c == '+' || c == '-') return presedence1;
+    if (c == '*' || c == '/') return presedence2;
+    if (c == '^') return presedence3;
+}
+
+bool precedenceOperation(stack* s, char* c) {
+    node* temp1 = s->top;
+
+    if (!temp1 || !temp1->next) {
+        return false;
+    }
+
+    node* temp2 = temp1->next;
+
+    int prec1 = precedenceReturn(temp1->data);
+    int prec2 = precedenceReturn(temp2->data);
+
+    if (prec1 == prec2 || prec1 < prec2) {
+        // Pop the second node (temp2) and store its data in *c
+        *c = temp2->data;
+        temp1->next = temp2->next;
+        free(temp2);
+        return true;
+    }
+
+    return false;
 }
