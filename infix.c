@@ -1,6 +1,7 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #define MAX 100
 
 typedef struct node {
@@ -20,12 +21,24 @@ bool isEmptyStack(stack*);
 void push(stack*, char);
 void pop(stack*);
 void display(stack*);
+void insertLinkedList(node*, char);
 
 /*main*/
 
 int main(void) {
     char* input = (char*)malloc(sizeof(char) * MAX);
+    node* head = NULL;
+
+    fgets(input, MAX, stdin);
+
+    for (int i = 0; input[i] != '\0'; i++) {
+        insertLinkedList(head, input[i]);
+    }
+
+    free(input);
+
     
+
     return 0;
 }
 
@@ -70,7 +83,7 @@ void pop(stack* s) {
 }
 
 void display(stack* s) {
-    if(isEmpty(s)) {
+    if(isEmptyStack(s)) {
         printf("empty");
         return;
     }
@@ -79,4 +92,22 @@ void display(stack* s) {
         printf("%d\n", temp ->data);
         temp = temp->next;
     }
+}
+
+void insertLinkedList(node* head, char c) {
+    node* newNode = (node*)malloc(sizeof(node));
+    newNode->data = c;
+    newNode->next = NULL;
+
+    if (head == NULL) {
+        head = newNode;
+        return;
+    }
+
+    node* temp = head;
+
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
 }
