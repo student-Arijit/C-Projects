@@ -66,6 +66,26 @@ int main(void) {
         if (precedenceOperation(s, &popped)) {
             insertLinkedList(&ouputHead, popped);
         }
+
+        //error
+
+        if (temp->data == ')') {
+            node* poplist = s->top;
+
+            while (poplist->data != '(') {
+                char l = pop(s);
+
+                if (l == ')' || l == '(') {
+                    continue;
+                } else {
+                    insertLinkedList(&ouputHead, l);
+                }
+
+                poplist = poplist->next;
+            }
+
+
+        }
         
 
         //display stack
@@ -125,7 +145,7 @@ bool isCharacter(char c) {
 }
 
 bool isoperator(char c){
-    return (c == '+' || c=='-'|| c=='*'|| c=='/' || c=='^');
+    return (c == '+' || c=='-'|| c=='*'|| c=='/' || c=='^' || c=='(' || c==')');
 }
 
 bool ignorable(char c) {
