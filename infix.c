@@ -26,6 +26,7 @@ void displayReverseHelper(node*);
 int precedenceReturn(char);
 bool precedenceOperation(stack*, char*);
 void printOutputList(node*);
+node* reverseList(node*);
 
 /*main*/
 
@@ -33,93 +34,213 @@ int main(void) {
     char* input = (char*)malloc(sizeof(char) * MAX);
     node* head = NULL;
     stack* s = (stack*)malloc(sizeof(stack));
-    node* ouputHead = NULL;
+    node* outputHead = NULL;
+    int choice;
 
     init(s);
 
-    printf("Enter your Equation: ");
-    fgets(input, MAX, stdin);
+    printf("1. Infix to Postfix\n2. Infix to Prefix\nEnter your choice: ");
+    scanf("%d", &choice);
+    getchar();  // To consume newline after scanf
 
-    for (int i = 0; input[i] != '\0'; i++) {
-        insertLinkedList(&head, input[i]); 
-    }
+    switch (choice) {
+        case 1: {
+            printf("Enter your Equation: ");
+            fgets(input, MAX, stdin);
 
-    free(input); 
-
-    node* temp = head;
-    int count = 1;
-
-    printf("SI No.\tInput\tStack\tOutput\tOperation\n");
-
-    while (temp->next != NULL) {
-        char operation[20];
-
-        //for step and input
-        printf("%d.\t%c\t", count, temp->data);
-
-        //operator check and push into stack
-        if (isoperator(temp->data)) {
-            push(s, temp->data);
-            strcpy(operation, "Push()");
-        }
-
-        char popped;
-        if (precedenceOperation(s, &popped)) {
-            insertLinkedList(&ouputHead, popped);
-        }
-
-        if (temp->data == ')') {
-            while (!isEmptyStack(s)) {
-                char chl = pop(s);
-                if (chl == '(') break; // stop on '('
-                if (chl != '(' && chl != ')') {
-                    insertLinkedList(&ouputHead, chl);
-                }
+            for (int i = 0; input[i] != '\0'; i++) {
+                insertLinkedList(&head, input[i]); 
             }
-        }
 
-        //display stack
-        display(s);
-        printf("\t");
+            free(input); 
 
-        //if character link into output linked list
-        if (isCharacter(temp->data)) {
-            insertLinkedList(&ouputHead, temp->data);
-            strcpy(operation, "Print()");
-        }
+            node* temp = head;
+            int count = 1;
 
-        //output linkedlist print
-        node* tempout = ouputHead;
-        while (tempout != NULL) {
-            printf("%c", tempout->data);
-            tempout = tempout->next;
-        }
+            printf("SI No.\tInput\tStack\tOutput\tOperation\n");
 
-        //operation print
-        printf("\t");
-        printf("%s", operation);
+            while (temp->next != NULL) {
+                char operation[20];
 
-        count++;
-        temp = temp->next;
+                //for step and input
+                printf("%d.\t%c\t", count, temp->data);
 
-        printf("\n");
+                //operator check and push into stack
+                if (isoperator(temp->data)) {
+                    push(s, temp->data);
+                    strcpy(operation, "Push()");
+                }
+
+                char popped;
+                if (precedenceOperation(s, &popped)) {
+                    insertLinkedList(&outputHead, popped);
+                    strcpy(operation, "Pop()");
+                }
+
+                if (temp->data == ')') {
+                    while (!isEmptyStack(s)) {
+                        char chl = pop(s);
+                        if (chl == '(') break; // stop on '('
+                        if (chl != '(' && chl != ')') {
+                            insertLinkedList(&outputHead, chl);
+                            strcpy(operation, "Pop()");
+                        }
+                    }
+                }
+
+                //display stack
+                display(s);
+                printf("\t");
+
+                //if character link into output linked list
+                if (isCharacter(temp->data)) {
+                    insertLinkedList(&outputHead, temp->data);
+                    strcpy(operation, "Print()");
+                }
+
+                //output linkedlist print
+                node* tempout = outputHead;
+                while (tempout != NULL) {
+                    printf("%c", tempout->data);
+                    tempout = tempout->next;
+                }
+
+                //operation print
+                printf("\t");
+                printf("%s", operation);
+
+                count++;
+                temp = temp->next;
+
+                printf("\n");
+            }
+
+            //final step 
+            printf("%d.\tempty\tempty\t", count);
+
+            while (!isEmptyStack(s)) {
+                char p = pop(s);
+                insertLinkedList(&outputHead, p);
+            }
+
+            //error
+            printOutputList(outputHead);
+            printf("\tpop()\n");
+
+            printf("Converted Expression: ");
+
+            node* tempout = outputHead;
+            while (tempout != NULL) {
+                printf("%c", tempout->data);
+                tempout = tempout->next;
+            }
+
+            printf("\n");
+        } break;
+
+        //ERROR
+        case 2: {
+            printf("Enter your Equation: ");
+            fgets(input, MAX, stdin);
+
+            for (int i = 0; input[i] != '\0'; i++) {
+                insertLinkedList(&head, input[i]); 
+            }
+
+            free(input); 
+
+            // Step 1: Reverse the infix expression
+            head = reverseList(head);
+
+            // Step 2: Swap '(' and ')'
+            node* tempSwap = head;
+            while (tempSwap != NULL) {
+                if (tempSwap->data == '(') {
+                    tempSwap->data = ')';
+                } else if (tempSwap->data == ')') {
+                    tempSwap->data = '(';
+                }
+                tempSwap = tempSwap->next;
+            }
+
+            node* temp = head;
+            int count = 1;
+
+            printf("SI No.\tInput\tStack\tOutput\tOperation\n");
+
+            while (temp != NULL) {
+                char operation[20] = "None";
+
+                printf("%d.\t%c\t", count, temp->data);
+
+                if (isoperator(temp->data)) {
+                    push(s, temp->data);
+                    strcpy(operation, "Push()");
+                }
+
+                char popped;
+                if (precedenceOperation(s, &popped)) {
+                    insertLinkedList(&outputHead, popped);
+                    strcpy(operation, "Pop()");
+                }
+
+                if (temp->data == ')') {
+                    while (!isEmptyStack(s)) {
+                        char chl = pop(s);
+                        if (chl == '(') break;
+                        if (chl != '(' && chl != ')') {
+                            insertLinkedList(&outputHead, chl);
+                            strcpy(operation, "Pop()");
+                        }
+                    }
+                }
+
+                display(s);
+                printf("\t");
+
+                if (isCharacter(temp->data)) {
+                    insertLinkedList(&outputHead, temp->data);
+                    strcpy(operation, "Print()");
+                }
+
+                node* tempout = outputHead;
+                while (tempout != NULL) {
+                    printf("%c", tempout->data);
+                    tempout = tempout->next;
+                }
+
+                printf("\t%s\n", operation);
+
+                count++;
+                temp = temp->next;
+            }
+
+            printf("%d.\tempty\tempty\t", count);
+
+            while (!isEmptyStack(s)) {
+                char p = pop(s);
+                insertLinkedList(&outputHead, p);
+            }
+
+            printOutputList(outputHead);
+            printf("\tpop()\n");
+
+    // Final Reverse of output to get prefix
+            printf("Converted Expression: ");
+            outputHead = reverseList(outputHead);
+
+            node* tempout = outputHead;
+            while (tempout != NULL) {
+                printf("%c", tempout->data);
+                tempout = tempout->next;
+            }
+            printf("\n");
+        } break;
+
+        default:
+            printf("Invalid choice!\n");
+            break;
     }
-
-    //final step done
-    printf("%d.\tempty\tempty\t", count);
-
-    while (!isEmptyStack(s)) {
-        char p = pop(s);
-
-        insertLinkedList(&ouputHead, p);
-    }
-
-    //error
-    printOutputList(ouputHead);
-
-    printf("\tpop()");
-
-    printf("\n");
 
     return 0;
 }
@@ -237,4 +358,19 @@ void printOutputList(node* head) {
             head = head->next;
         }
     }
+}
+
+node* reverseList(node* head) {
+    node* prev = NULL;
+    node* current = head;
+    node* next = NULL;
+
+    while (current != NULL) {
+        next = current->next;    // Save next node
+        current->next = prev;    // Reverse current node's pointer
+        prev = current;          // Move prev one step ahead
+        current = next;          // Move current one step ahead
+    }
+
+    return prev; // New head
 }
