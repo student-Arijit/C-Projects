@@ -57,13 +57,13 @@ int main(void) {
             node* temp = head;
             int count = 1;
 
-            printf("SI No.\tInput\tStack\tOutput\tOperation\n");
+            printf("SI No.\t\tInput\t\tStack\t\tOutput\t\tOperation\n");
 
             while (temp->next != NULL) {
                 char operation[20];
 
                 //for step and input
-                printf("%d.\t%c\t", count, temp->data);
+                printf("%d.\t\t%c\t\t", count, temp->data);
 
                 //operator check and push into stack
                 if (isoperator(temp->data)) {
@@ -90,7 +90,7 @@ int main(void) {
 
                 //display stack
                 display(s);
-                printf("\t");
+                printf("\t\t");
 
                 //if character link into output linked list
                 if (isCharacter(temp->data)) {
@@ -106,7 +106,7 @@ int main(void) {
                 }
 
                 //operation print
-                printf("\t");
+                printf("\t\t");
                 printf("%s", operation);
 
                 count++;
@@ -116,7 +116,7 @@ int main(void) {
             }
 
             //final step 
-            printf("%d.\tempty\tempty\t", count);
+            printf("%d.\t\tempty\t\tempty\t\t", count);
 
             while (!isEmptyStack(s)) {
                 char p = pop(s);
@@ -125,7 +125,7 @@ int main(void) {
 
             //error
             printOutputList(outputHead);
-            printf("\tpop()\n");
+            printf("\t\tpop()\n");
 
             printf("Converted Expression: ");
 
@@ -166,12 +166,12 @@ int main(void) {
             node* temp = head;
             int count = 1;
 
-            printf("SI No.\tInput\tStack\tOutput\tOperation\n");
+            printf("SI No.\t\tInput\t\tStack\t\tOutput\t\tOperation\n");
 
             while (temp != NULL) {
                 char operation[20] = "None";
 
-                printf("%d.\t%c\t", count, temp->data);
+                printf("%d.\t\t%c\t\t", count, temp->data);
 
                 if (isoperator(temp->data)) {
                     push(s, temp->data);
@@ -196,7 +196,7 @@ int main(void) {
                 }
 
                 display(s);
-                printf("\t");
+                printf("\t\t");
 
                 if (isCharacter(temp->data)) {
                     insertLinkedList(&outputHead, temp->data);
@@ -209,13 +209,13 @@ int main(void) {
                     tempout = tempout->next;
                 }
 
-                printf("\t%s\n", operation);
+                printf("\t\t%s\n", operation);
 
                 count++;
                 temp = temp->next;
             }
 
-            printf("%d.\tempty\tempty\t", count);
+            printf("%d.\t\tempty\t\tempty\t\t", count);
 
             while (!isEmptyStack(s)) {
                 char p = pop(s);
