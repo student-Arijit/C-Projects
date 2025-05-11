@@ -25,6 +25,7 @@ void insertLinkedList(node**, char);
 void displayReverseHelper(node*);
 int precedenceReturn(char);
 bool precedenceOperation(stack*, char*);
+void printOutputList(node*);
 
 /*main*/
 
@@ -67,26 +68,15 @@ int main(void) {
             insertLinkedList(&ouputHead, popped);
         }
 
-        //error
-
         if (temp->data == ')') {
-            node* poplist = s->top;
-
-            while (poplist->data != '(') {
-                char l = pop(s);
-
-                if (l == ')' || l == '(') {
-                    continue;
-                } else {
-                    insertLinkedList(&ouputHead, l);
+            while (!isEmptyStack(s)) {
+                char chl = pop(s);
+                if (chl == '(') break; // stop on '('
+                if (chl != '(' && chl != ')') {
+                    insertLinkedList(&ouputHead, chl);
                 }
-
-                poplist = poplist->next;
             }
-
-
         }
-        
 
         //display stack
         display(s);
@@ -124,13 +114,9 @@ int main(void) {
         insertLinkedList(&ouputHead, p);
     }
 
-    node* tempout = ouputHead;
+    //error
+    printOutputList(ouputHead);
 
-    while (tempout != NULL) {
-        printf("%c", tempout->data);
-        tempout = tempout->next;
-    }
-    
     printf("\tpop()");
 
     printf("\n");
@@ -213,29 +199,26 @@ void insertLinkedList(node** head, char c) {
 }
 
 int precedenceReturn(char c) {
-    int presedence1 = 1;
-    int presedence2 = 2;
-    int presedence3 = 3;
-
-    if (c == '+' || c == '-') return presedence1;
-    if (c == '*' || c == '/') return presedence2;
-    if (c == '^') return presedence3;
+    if (c == '+' || c == '-') return 1;
+    if (c == '*' || c == '/') return 2;
+    if (c == '^') return 3;
+    return -1; // For '(', ')', or any non-operator
 }
+
 
 bool precedenceOperation(stack* s, char* c) {
     node* temp1 = s->top;
-
-    if (!temp1 || !temp1->next) {
-        return false;
-    }
+    if (!temp1 || !temp1->next) return false;
 
     node* temp2 = temp1->next;
 
     int prec1 = precedenceReturn(temp1->data);
     int prec2 = precedenceReturn(temp2->data);
 
+    // Skip precedence check if any are parentheses
+    if (prec1 == -1 || prec2 == -1) return false;
+
     if (prec1 == prec2 || prec1 < prec2) {
-        // Pop the second node (temp2) and store its data in *c
         *c = temp2->data;
         temp1->next = temp2->next;
         free(temp2);
@@ -243,4 +226,15 @@ bool precedenceOperation(stack* s, char* c) {
     }
 
     return false;
+}
+
+void printOutputList(node* head) {
+    if (head == NULL) {
+        printf("empty");
+    } else {
+        while (head != NULL) {
+            printf("%c", head->data);
+            head = head->next;
+        }
+    }
 }
