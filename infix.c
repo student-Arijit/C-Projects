@@ -9,6 +9,14 @@ typedef struct node {
     struct node* next;
 }node;
 
+typedef struct TreeNode {
+    char data;
+    struct TreeNode *left, *right;
+} TreeNode;
+
+TreeNode* Stack[MAX];
+int Top = -1;
+
 typedef struct {
     node* top;
 } stack;
@@ -27,6 +35,11 @@ int precedenceReturn(char);
 bool precedenceOperation(stack*, char*);
 void printOutputList(node*);
 node* reverseList(node*);
+void Push(TreeNode*);
+TreeNode* Pop();
+TreeNode* Peek();
+TreeNode* createNodeTree(char);
+void freeTree(TreeNode*);
 
 /*main*/
 
@@ -47,6 +60,38 @@ int main(void) {
         case 1: {
             printf("Enter your Equation: ");
             fgets(input, MAX, stdin);
+
+            TreeNode *root = NULL;
+
+            for (int i = 0; input[i] != '\0'; i++) {
+                char cht = input[i];
+
+                if (cht == '(') {
+                    TreeNode* newNode = createNodeTree(cht);
+                    if (!root) {
+                        root = newNode;
+                    } else {
+                        TreeNode* parent = Peek();
+                        parent->right = newNode;
+                    }
+                    Push(newNode);
+                } else if (cht == ')') {
+                    TreeNode* parent = Pop();
+                    if (!parent) {
+                        printf("Error: Too many ')' or misplaced ')'\n");
+                        return 1;
+                    }
+                    TreeNode* newNode = createNodeTree(cht);
+                    parent->left = newNode;
+                } 
+            }
+
+            if (Top != -1) {
+                printf("Error: Too many '(' unmatched\n");
+                return 1;
+            }
+
+            freeTree(root);
 
             for (int i = 0; input[i] != '\0'; i++) {
                 insertLinkedList(&head, input[i]); 
@@ -142,6 +187,38 @@ int main(void) {
         case 2: {
             printf("Enter your Equation: ");
             fgets(input, MAX, stdin);
+
+                        TreeNode *root = NULL;
+
+            for (int i = 0; input[i] != '\0'; i++) {
+                char cht = input[i];
+
+                if (cht == '(') {
+                    TreeNode* newNode = createNodeTree(cht);
+                    if (!root) {
+                        root = newNode;
+                    } else {
+                        TreeNode* parent = Peek();
+                        parent->right = newNode;
+                    }
+                    Push(newNode);
+                } else if (cht == ')') {
+                    TreeNode* parent = Pop();
+                    if (!parent) {
+                        printf("Error: Too many ')' or misplaced ')'\n");
+                        return 1;
+                    }
+                    TreeNode* newNode = createNodeTree(cht);
+                    parent->left = newNode;
+                } 
+            }
+
+            if (Top != -1) {
+                printf("Error: Too many '(' unmatched\n");
+                return 1;
+            }
+
+            freeTree(root);
 
             for (int i = 0; input[i] != '\0'; i++) {
                 insertLinkedList(&head, input[i]); 
@@ -373,4 +450,36 @@ node* reverseList(node* head) {
     }
 
     return prev; // New head
+}
+
+void Push(TreeNode* Node) {
+    if (Top < MAX - 1)
+        Stack[++Top] = Node;
+}
+
+TreeNode* Pop() {
+    if (Top >= 0)
+        return Stack[Top--];
+    return NULL;
+}
+
+TreeNode* Peek() {
+    if (Top >= 0)
+        return Stack[Top];
+    return NULL;
+}
+
+TreeNode* createNodeTree(char data) {
+    TreeNode* newNode = (TreeNode*) malloc(sizeof(TreeNode));
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+void freeTree(TreeNode* root) {
+    if (root) {
+        freeTree(root->left);
+        freeTree(root->right);
+        free(root);
+    }
 }
